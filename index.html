@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Tools — Petits outils gratuits pour streamers</title>
+    <meta name="description" content="Twitch Tools : une boîte à outils gratuite et open source pour streamers. Générateur de planning de stream, créateur de mascotte, emotes et photo de profil.">
+    <meta property="og:title" content="Twitch Tools — Petits outils gratuits pour streamers">
+    <meta property="og:description" content="Planning de stream, mascotte, emotes, photo de profil. 100 % gratuit, 100 % open source.">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="shared/site.css">
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="site-nav">
+    <a class="brand" href="index.html"><span class="brand-mark"><i class="fa-brands fa-twitch"></i></span>Twitch Tools</a>
+    <div class="nav-links">
+        <a href="index.html" class="active">Accueil</a>
+        <a href="schedule/index.html">Planning</a>
+        <a href="mascot/index.html">Mascotte</a>
+    </div>
+    <div class="nav-spacer"></div>
+    <a class="nav-gh" href="https://github.com/MaqzBenz/twitch-tools" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Open source</a>
+</nav>
+
+<header class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-text">
+        <span class="pill"><i class="fa-solid fa-sparkles"></i> 100 % gratuit · open source · sans compte</span>
+        <h1>Les petits outils qui<br><span class="grad-text">font briller ton stream</span></h1>
+        <p>Planning, mascotte, emotes, photo de profil… Tout tourne dans ton navigateur, rien n'est envoyé à un serveur.</p>
+        <div class="hero-cta">
+            <a class="btn btn-primary btn-lg" href="mascot/index.html"><i class="fa-solid fa-wand-magic-sparkles"></i> Créer ma mascotte</a>
+            <a class="btn btn-lg" href="schedule/index.html"><i class="fa-solid fa-calendar-week"></i> Faire mon planning</a>
+        </div>
+    </div>
+    <div class="hero-mascots" id="heroMascots" aria-hidden="true"></div>
+</header>
+
+<main>
+    <section class="section" id="tools">
+        <h2 class="section-title">Les outils</h2>
+        <div class="tool-grid">
+
+            <a class="tool-card featured" href="mascot/index.html" id="cardMascot">
+                <span class="tool-badge new">Nouveau</span>
+                <div class="tool-visual" id="mascotCardVisual"></div>
+                <h3>Créateur de mascotte</h3>
+                <p>Têtes, cheveux, chapeaux, lunettes, t-shirts, 19 expressions, 10 poses et 6 styles. Exporte en emotes Twitch ou en photo de profil.</p>
+                <ul class="tags"><li>Emotes 112/56/28</li><li>Photo de profil</li><li>SVG</li></ul>
+                <span class="tool-go">Ouvrir <i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+
+            <a class="tool-card" href="schedule/index.html" id="cardSchedule">
+                <div class="tool-visual sched-visual">
+                    <div class="sched-mini">
+                        <div><b>LUN</b><i></i></div><div><b>MAR</b><i></i></div><div class="on"><b>MER</b><i></i></div><div><b>JEU</b><i></i></div>
+                        <div class="on"><b>VEN</b><i></i></div><div><b>SAM</b><i></i></div><div><b>DIM</b><i></i></div>
+                    </div>
+                </div>
+                <h3>Planning de stream</h3>
+                <p>Génère un visuel HD de ta semaine avec synchro Twitch API, 9 styles, formats paysage, portrait et carré.</p>
+                <ul class="tags"><li>Twitch API</li><li>9 styles</li><li>PNG / JPEG / WebP</li></ul>
+                <span class="tool-go">Ouvrir <i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+
+            <div class="tool-card soon">
+                <span class="tool-badge">Bientôt</span>
+                <div class="tool-visual soon-visual"><i class="fa-solid fa-image"></i></div>
+                <h3>Bannières &amp; panneaux</h3>
+                <p>Bannière de chaîne, panneaux « À propos » et écrans d'attente (BRB, début, fin).</p>
+            </div>
+
+            <div class="tool-card soon">
+                <span class="tool-badge">Bientôt</span>
+                <div class="tool-visual soon-visual"><i class="fa-solid fa-bell"></i></div>
+                <h3>Alertes &amp; overlays</h3>
+                <p>Alertes de follow, sub et raid personnalisables pour OBS, prêtes à coller.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="why">
+        <div class="why-grid">
+            <div class="why-item"><i class="fa-solid fa-lock"></i><h3>Privé par défaut</h3><p>Tout se passe dans ton navigateur. Tes créations restent chez toi.</p></div>
+            <div class="why-item"><i class="fa-brands fa-github"></i><h3>Open source</h3><p>Hébergé sur GitHub Pages, code visible, contributions bienvenues.</p></div>
+            <div class="why-item"><i class="fa-solid fa-bolt"></i><h3>Instantané</h3><p>Pas d'inscription, pas d'installation. Tu ouvres, tu crées, tu exportes.</p></div>
+        </div>
+    </section>
+
+    <section class="section contrib" id="contribute">
+        <h2 class="section-title">Contribue</h2>
+        <p>Une idée d'outil ? Une pièce de mascotte à ajouter (chapeau, coiffure, accessoire…) ? Chaque pièce de la mascotte est une petite fonction dans <code>mascot/engine.js</code> : ouvre une pull request !</p>
+        <a class="btn" href="https://github.com/MaqzBenz/twitch-tools" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Voir le dépôt GitHub</a>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <span>Twitch Tools · Fait pour les streamers · Non affilié à Twitch</span>
+</footer>
+
+<script src="mascot/engine.js"></script>
+<script>
+(() => {
+    // Mascottes décoratives (aléatoires à chaque visite)
+    const exprs = ['joy', 'love', 'excited', 'cool', 'wink', 'lol'];
+    const poses = ['wave', 'cheer', 'hearts', 'thumbs', 'peace', 'neutral'];
+    const hero = document.getElementById('heroMascots');
+    const styles = ['cartoon', 'anime', 'sticker', 'gloss'];
+    for (let i = 0; i < 4; i++) {
+        const st = MQ.randomState({ expr: exprs[i % exprs.length], pose: poses[i % poses.length], style: styles[i % styles.length] });
+        const d = document.createElement('div');
+        d.className = 'hm hm' + i;
+        d.innerHTML = MQ.buildSVG(st, { view: 'bust', uid: 'h' + i + '_' });
+        hero.appendChild(d);
+    }
+    const st = MQ.randomState({ expr: 'excited', pose: 'cheer', style: 'sticker' });
+    document.getElementById('mascotCardVisual').innerHTML = MQ.buildSVG(st, { view: 'head', uid: 'c_' });
+})();
+</script>
+</body>
+</html>

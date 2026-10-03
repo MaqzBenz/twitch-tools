@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Scheduler Pro — Générateur de planning de stream</title>
+    <meta name="description" content="Créez et exportez votre planning de stream en HD en quelques secondes. Synchronisation Twitch API, 9 styles visuels, formats paysage & portrait.">
+    <meta property="og:title" content="Stream Scheduler Pro">
+    <meta property="og:description" content="Générateur de planning de stream gratuit, open-source et hébergé sur GitHub Pages.">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="../shared/site.css">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Google Fonts : polices UI + polices Canvas -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;700&family=Inter:wght@400;700;900&family=Montserrat:wght@400;700;900&family=Nunito:wght@400;700;900&family=Oswald:wght@400;700&family=Outfit:wght@500;700;800;900&family=Playfair+Display:wght@700;900&family=Poppins:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- Conteneur de Toasts -->
+<div id="toastContainer" aria-live="polite"></div>
+
+<!-- NAVIGATION COMMUNE TWITCH TOOLS -->
+<nav class="site-nav">
+    <a class="brand" href="../index.html"><span class="brand-mark"><i class="fa-brands fa-twitch"></i></span>Twitch Tools</a>
+    <div class="nav-links">
+        <a href="../index.html">Accueil</a>
+        <a href="index.html" class="active">Planning</a>
+        <a href="../mascot/index.html">Mascotte</a>
+    </div>
+    <div class="nav-spacer"></div>
+    <a class="nav-gh" href="https://github.com/MaqzBenz/twitch-tools" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Open source</a>
+</nav>
+
+<div class="app-container">
+
+    <!-- ═══════════════════════════════════════
+         SIDEBAR
+    ═══════════════════════════════════════ -->
+    <aside class="sidebar">
+        <header class="sidebar-header">
+            <div class="logo-block">
+                <div class="logo-icon"><i class="fas fa-calendar-week"></i></div>
+                <div>
+                    <h1>Planning <span class="badge">de stream</span></h1>
+                    <p class="logo-sub">Twitch Tools · Pro V4</p>
+                </div>
+            </div>
+            <button id="btnOpenSettings" class="btn-settings" title="Paramètres">
+                <i class="fas fa-gear"></i>
+            </button>
+        </header>
+
+        <!-- 1. SOURCE -->
+        <section class="control-group">
+            <h3><span class="step-num">1</span> Source des données</h3>
+            <input type="text" id="twitchUsername" class="input-text" placeholder="Pseudo Twitch (ex: Ninja)">
+
+            <button id="btnFetchTwitch" class="btn btn-twitch">
+                <i class="fab fa-twitch"></i> Synchro Twitch API
+            </button>
+            <button id="btnOpenEditor" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Éditeur Manuel
+            </button>
+        </section>
+
+        <hr class="divider">
+
+        <!-- 2. NAVIGATION SEMAINE -->
+        <section class="control-group">
+            <h3><span class="step-num">2</span> Semaine affichée</h3>
+            <div class="week-nav">
+                <button id="btnPrevWeek" class="btn btn-nav" title="Semaine précédente">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span id="weekLabel" class="week-label">Semaine actuelle</span>
+                <button id="btnNextWeek" class="btn btn-nav" title="Semaine suivante">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <button id="btnResetWeek" class="btn btn-ghost btn-small">
+                <i class="fas fa-rotate-left"></i> Revenir à maintenant
+            </button>
+        </section>
+
+        <hr class="divider">
+
+        <!-- 3. RÉSEAUX SOCIAUX -->
+        <section class="control-group">
+            <h3><span class="step-num">3</span> Réseaux Sociaux</h3>
+            <div id="socialsContainer"></div>
+            <button id="btnAddSocial" class="btn btn-ghost btn-small">
+                <i class="fas fa-plus"></i> Ajouter un réseau
+            </button>
+        </section>
+
+        <hr class="divider">
+
+        <!-- 4. STYLE & APPARENCE -->
+        <section class="control-group">
+            <h3><span class="step-num">4</span> Style &amp; Apparence</h3>
+
+            <label class="label-small">Style Visuel</label>
+            <select id="themeStyle" class="input-text select-box">
+                <optgroup label="── Originaux ──">
+                    <option value="classic">🪟 Classique (Glassmorphism)</option>
+                    <option value="minimal">✏️ Minimaliste (Lignes pures)</option>
+                    <option value="neon">⚡ Néon (Gaming Glow)</option>
+                    <option value="polaroid">📸 Polaroid (Photos blanches)</option>
+                </optgroup>
+                <optgroup label="── Nouveaux ──">
+                    <option value="arcade">🃏 Retro Arcade (Pixels CRT)</option>
+                    <option value="pastel">🌸 Pastel (Aesthetic)</option>
+                    <option value="newspaper">📰 Newspaper (Zine)</option>
+                    <option value="lofi">🌊 Lo-Fi Chill (Film Grain)</option>
+                    <option value="cosmic">🪐 Cosmic (Space)</option>
+                </optgroup>
+            </select>
+
+            <label class="label-small">Orientation</label>
+            <div class="toggle-group">
+                <button id="btnFormatLandscape" class="btn btn-toggle active">
+                    <i class="fas fa-expand-alt"></i> Paysage
+                </button>
+                <button id="btnFormatPortrait" class="btn btn-toggle">
+                    <i class="fas fa-mobile-alt"></i> Portrait
+                </button>
+            </div>
+
+            <label class="label-small" style="margin-top:10px;">Police d'écriture</label>
+            <select id="fontFamily" class="input-text select-box">
+                <option value="Inter">Inter — Moderne</option>
+                <option value="Montserrat">Montserrat — Élégant</option>
+                <option value="Poppins">Poppins — Rond</option>
+                <option value="Bebas Neue">Bebas Neue — Impact</option>
+                <option value="Oswald">Oswald — Condensé</option>
+                <option value="Nunito">Nunito — Doux (Pastel)</option>
+                <option value="Playfair Display">Playfair Display — Sérif</option>
+                <option value="Caveat">Caveat — Handwriting</option>
+                <option value="Press Start 2P">Press Start 2P — Pixel</option>
+            </select>
+
+            <label class="label-small" style="margin-top:10px;">Format de l'image du live</label>
+            <select id="imageLayout" class="input-text select-box">
+                <option value="standard">🖼️ Vignette normale</option>
+                <option value="fullscreen">🌌 Plein écran en fond (Immersif)</option>
+                <option value="banner">🏷️ Grande bannière en haut</option>
+                <option value="large">🔍 Grande jaquette XXL</option>
+                <option value="hidden">🚫 Masquer les images</option>
+            </select>
+        </section>
+
+        <hr class="divider">
+
+        <!-- 5. COULEURS & IMAGE -->
+        <section class="control-group">
+            <h3><span class="step-num">5</span> Couleurs &amp; Fond</h3>
+            <div class="color-picker-row">
+                <label>Couleur dominante</label>
+                <div class="color-swatch-wrapper">
+                    <input type="color" id="colorAccent" value="#9146FF">
+                </div>
+            </div>
+            <div class="color-picker-row">
+                <label>Couleur du texte</label>
+                <div class="color-swatch-wrapper">
+                    <input type="color" id="colorText" value="#ffffff">
+                </div>
+            </div>
+            <div class="bg-upload-row">
+                <input type="file" id="bgUploader" accept="image/png, image/jpeg, image/webp" style="display:none;">
+                <button id="btnUploadBg" class="btn btn-ghost" onclick="document.getElementById('bgUploader').click()">
+                    <i class="fas fa-image"></i> Ajouter un fond
+                </button>
+                <button id="btnClearBg" class="btn btn-danger-icon" title="Enlever le fond">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <!-- 6. PROJETS -->
+        <section class="control-group">
+            <h3><span class="step-num">6</span> Projets</h3>
+            <div class="split-buttons">
+                <button id="btnExportConfig" class="btn btn-ghost">
+                    <i class="fas fa-file-export"></i> Sauvegarder
+                </button>
+                <input type="file" id="importConfig" accept=".json" style="display:none;">
+                <button id="btnImportConfig" class="btn btn-ghost" onclick="document.getElementById('importConfig').click()">
+                    <i class="fas fa-file-import"></i> Charger
+                </button>
+            </div>
+        </section>
+
+        <div class="sidebar-footer">
+            <a href="https://github.com/MaqzBenz/twitch-tools" target="_blank" rel="noopener" class="github-link">
+                <i class="fab fa-github"></i> Open-source sur GitHub
+            </a>
+        </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════════
+         ZONE PRINCIPALE
+    ═══════════════════════════════════════ -->
+    <main class="preview-area">
+        <div class="preview-topbar">
+            <div class="preview-title">
+                <i class="fas fa-eye"></i> Prévisualisation HD
+            </div>
+            <div class="preview-actions">
+                <button id="btnCopyClipboard" class="btn btn-action" title="Copier dans le presse-papier">
+                    <i class="fas fa-copy"></i> Copier
+                </button>
+                <div class="export-dropdown-wrapper">
+                    <button id="btnDownloadImage" class="btn btn-success">
+                        <i class="fas fa-download"></i> Télécharger PNG
+                    </button>
+                    <div class="export-dropdown">
+                        <button id="btnDownloadJpeg" class="export-option">
+                            <i class="fas fa-image"></i> JPEG (léger)
+                        </button>
+                        <button id="btnDownloadWebp" class="export-option">
+                            <i class="fas fa-image"></i> WebP (moderne)
+                        </button>
+                        <button id="btnDownloadTonight" class="export-option">
+                            <i class="fas fa-moon"></i> "Tonight" (1:1)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-wrapper">
+            <canvas id="scheduleCanvas" width="1920" height="1080"></canvas>
+        </div>
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL ÉDITEUR SEMAINE
+═══════════════════════════════════════ -->
+<div id="weekEditorModal" class="modal hidden">
+    <div class="modal-content large-modal">
+        <div class="modal-header">
+            <div>
+                <h2><i class="fas fa-calendar-edit"></i> Éditeur de Semaine</h2>
+                <p class="hint">L'heure de fin est <b>optionnelle</b>. La jaquette peut être chargée via l'API Twitch ou uploadée manuellement.</p>
+            </div>
+            <button id="btnCloseWeek" class="btn-close-modal" title="Fermer">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div id="daysList" class="days-list"></div>
+
+        <div class="modal-actions">
+            <button id="btnSaveWeek" class="btn btn-success">
+                <i class="fas fa-check"></i> Appliquer au Planning
+            </button>
+            <button id="btnCloseWeekBottom" class="btn btn-ghost">
+                Fermer sans sauvegarder
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL PARAMÈTRES
+═══════════════════════════════════════ -->
+<div id="settingsModal" class="modal hidden">
+    <div class="modal-content settings-modal">
+        <div class="modal-header">
+            <div>
+                <h2><i class="fas fa-gear"></i> Paramètres</h2>
+                <p class="hint">Configuration de votre instance de Stream Scheduler Pro.</p>
+            </div>
+            <button id="btnCloseSettings" class="btn-close-modal" title="Fermer">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="settings-body">
+
+            <!-- CLIENT ID TWITCH -->
+            <div class="settings-section">
+                <div class="settings-section-header">
+                    <div class="settings-section-icon twitch-icon">
+                        <i class="fab fa-twitch"></i>
+                    </div>
+                    <div>
+                        <h4>Twitch Client ID</h4>
+                        <p>Nécessaire pour synchroniser automatiquement votre planning depuis l'API Twitch.</p>
+                    </div>
+                </div>
+
+                <div id="clientIdStatus" class="client-id-status status-empty">
+                    <i class="fas fa-circle-xmark"></i>
+                    <span>Aucun Client ID configuré</span>
+                </div>
+
+                <!-- URL DE REDIRECT — toujours visible -->
+                <div class="redirect-url-box">
+                    <div class="redirect-url-label">
+                        <i class="fas fa-link"></i>
+                        URL à coller dans <strong>OAuth Redirect URLs</strong> sur dev.twitch.tv
+                    </div>
+                    <div class="redirect-url-row">
+                        <code id="currentUrlDisplay" class="redirect-url-value">Chargement...</code>
+                        <button id="btnCopyRedirectUrl" class="btn-copy-url" title="Copier l'URL">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <p class="redirect-url-hint">⚠️ Cette URL doit être enregistrée <em>exactement</em> dans votre app Twitch, sinon vous obtiendrez l'erreur <code>redirect_mismatch</code>.</p>
+                </div>
+
+                <label class="label-small" style="margin-top:14px;">Votre Client ID</label>
+                <div class="settings-input-row">
+                    <input
+                        type="text"
+                        id="settingsClientId"
+                        class="input-text"
+                        placeholder="ex: abc123def456ghi789jkl"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <button id="btnSaveClientId" class="btn btn-primary" style="width:auto;margin-bottom:0;white-space:nowrap;">
+                        <i class="fas fa-floppy-disk"></i> Enregistrer
+                    </button>
+                </div>
+
+                <div class="settings-help">
+                    <details open>
+                        <summary><i class="fas fa-circle-question"></i> Comment obtenir mon Client ID ?</summary>
+                        <ol>
+                            <li>Connectez-vous sur <a href="https://dev.twitch.tv/console/apps" target="_blank" rel="noopener">dev.twitch.tv/console/apps</a></li>
+                            <li>Cliquez sur <strong>"Register Your Application"</strong></li>
+                            <li>Dans <em>OAuth Redirect URLs</em>, collez l'URL affichée ci-dessus (le bouton <i class="fas fa-copy"></i> la copie)</li>
+                            <li>Catégorie : <strong>Website Integration</strong> &mdash; Type : <strong>Public</strong></li>
+                            <li>Copiez le <strong>Client ID</strong> généré et collez-le dans le champ ci-dessus</li>
+                        </ol>
+                    </details>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

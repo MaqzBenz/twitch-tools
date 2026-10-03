@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créateur de mascotte, emotes &amp; photo de profil — Twitch Tools</title>
+    <meta name="description" content="Crée ta propre mascotte : têtes, cheveux, chapeaux, lunettes, t-shirts, expressions et poses. Exporte-la en emotes Twitch (112/56/28) ou en photo de profil. Gratuit et open source.">
+    <meta property="og:title" content="Créateur de mascotte — Twitch Tools">
+    <meta property="og:description" content="Crée ta mascotte et exporte-la en emotes Twitch ou photo de profil.">
+    <link rel="stylesheet" href="../shared/site.css">
+    <link rel="stylesheet" href="mascot.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div id="toasts" aria-live="polite"></div>
+
+<nav class="site-nav">
+    <a class="brand" href="../index.html"><span class="brand-mark"><i class="fa-brands fa-twitch"></i></span>Twitch Tools</a>
+    <div class="nav-links">
+        <a href="../index.html">Accueil</a>
+        <a href="../schedule/index.html">Planning</a>
+        <a href="index.html" class="active">Mascotte</a>
+    </div>
+    <div class="nav-spacer"></div>
+    <a class="nav-gh" href="https://github.com/MaqzBenz/twitch-tools" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Open source</a>
+</nav>
+
+<div class="studio">
+
+    <!-- ═══ ÉDITEUR ═══ -->
+    <aside class="editor" aria-label="Éditeur de mascotte">
+        <div class="tabs" id="tabs" role="tablist"></div>
+        <div class="panel" id="panel">
+            <div class="panel-head">
+                <h2 id="panelTitle">Tête</h2>
+                <button class="btn btn-sm btn-ghost" id="btnDiceCat" title="Au hasard dans cette catégorie"><i class="fa-solid fa-dice"></i> Hasard</button>
+            </div>
+            <div id="colorBlock" class="color-block"></div>
+            <div id="optionGrid" class="option-grid"></div>
+        </div>
+    </aside>
+
+    <!-- ═══ SCÈNE ═══ -->
+    <main class="stage">
+        <div class="stage-toolbar">
+            <input id="mascotName" class="name-input" type="text" maxlength="24" placeholder="Nom de ta mascotte" aria-label="Nom de la mascotte">
+            <div class="spacer"></div>
+            <button class="btn btn-sm" id="btnRandom"><i class="fa-solid fa-dice"></i> Tout au hasard</button>
+            <button class="btn btn-sm" id="btnAnim" title="Animation d'idle"><i class="fa-solid fa-wand-magic-sparkles"></i> Animer</button>
+            <button class="btn btn-sm btn-ghost btn-danger" id="btnReset" title="Réinitialiser"><i class="fa-solid fa-rotate-left"></i></button>
+        </div>
+
+        <div class="preview-wrap">
+            <div class="preview anim" id="preview" title="Clique pour changer d'expression"></div>
+            <div class="preview-label" id="previewLabel"></div>
+        </div>
+
+        <section class="strip-section">
+            <h3><i class="fa-solid fa-masks-theater"></i> Expressions <small>— clique pour changer</small></h3>
+            <div class="strip" id="exprStrip"></div>
+        </section>
+        <section class="strip-section">
+            <h3><i class="fa-solid fa-person"></i> Poses</h3>
+            <div class="strip" id="poseStrip"></div>
+        </section>
+    </main>
+
+    <!-- ═══ EXPORT & SAUVEGARDES ═══ -->
+    <aside class="side" aria-label="Export">
+        <section class="card">
+            <h3 class="card-title"><i class="fa-solid fa-file-export"></i> Exporter</h3>
+            <div class="seg" id="exportMode">
+                <button class="seg-btn active" data-mode="emote"><i class="fa-solid fa-face-grin-wink"></i> Emote</button>
+                <button class="seg-btn" data-mode="avatar"><i class="fa-solid fa-circle-user"></i> Photo de profil</button>
+            </div>
+
+            <!-- Emote -->
+            <div id="emoteOpts" class="export-opts">
+                <label class="lbl">Cadrage</label>
+                <div class="seg small" id="emoteCrop">
+                    <button class="seg-btn active" data-v="head">Visage</button>
+                    <button class="seg-btn" data-v="bust">Buste</button>
+                </div>
+                <label class="lbl">Aperçu dans le chat <small>(112 · 56 · 28 px)</small></label>
+                <div class="chat-preview" id="emoteSizes"></div>
+                <div class="btn-col">
+                    <button class="btn btn-primary" id="btnZipTwitch"><i class="fa-solid fa-file-zipper"></i> ZIP Twitch (28 / 56 / 112)</button>
+                    <div class="btn-row">
+                        <button class="btn" id="btnEmotePng"><i class="fa-solid fa-download"></i> PNG 112</button>
+                        <button class="btn" id="btnEmoteCopy"><i class="fa-regular fa-copy"></i> Copier</button>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn" id="btnAllZip"><i class="fa-solid fa-boxes-stacked"></i> Toutes les expressions</button>
+                        <button class="btn" id="btnSheet"><i class="fa-solid fa-table-cells"></i> Planche</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avatar -->
+            <div id="avatarOpts" class="export-opts hidden">
+                <div class="avatar-preview-row"><canvas id="avatarPreview" width="160" height="160"></canvas></div>
+                <label class="lbl">Forme</label>
+                <div class="seg small" id="avShape">
+                    <button class="seg-btn active" data-v="circle">Rond</button>
+                    <button class="seg-btn" data-v="rounded">Arrondi</button>
+                    <button class="seg-btn" data-v="square">Carré</button>
+                </div>
+                <label class="lbl">Cadrage</label>
+                <div class="seg small" id="avCrop">
+                    <button class="seg-btn active" data-v="head">Visage</button>
+                    <button class="seg-btn" data-v="bust">Buste</button>
+                </div>
+                <label class="lbl">Fond</label>
+                <div class="seg small" id="avBg">
+                    <button class="seg-btn" data-v="none">Transparent</button>
+                    <button class="seg-btn active" data-v="gradient">Dégradé</button>
+                    <button class="seg-btn" data-v="solid">Uni</button>
+                </div>
+                <div class="bg-colors">
+                    <label>Couleur 1 <input type="color" id="avC1" value="#9146ff"></label>
+                    <label>Couleur 2 <input type="color" id="avC2" value="#ff5fa2"></label>
+                </div>
+                <label class="lbl">Taille</label>
+                <div class="seg small" id="avSize">
+                    <button class="seg-btn" data-v="256">256</button>
+                    <button class="seg-btn active" data-v="512">512</button>
+                    <button class="seg-btn" data-v="800">800</button>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" id="btnAvDl"><i class="fa-solid fa-download"></i> Télécharger</button>
+                    <button class="btn" id="btnAvCopy"><i class="fa-regular fa-copy"></i> Copier</button>
+                </div>
+            </div>
+
+            <div class="btn-row sub-export">
+                <button class="btn btn-sm btn-ghost" id="btnSvg"><i class="fa-solid fa-vector-square"></i> SVG</button>
+                <button class="btn btn-sm btn-ghost" id="btnShare"><i class="fa-solid fa-link"></i> Lien de partage</button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h3 class="card-title"><i class="fa-solid fa-floppy-disk"></i> Mes mascottes</h3>
+            <div class="btn-row">
+                <button class="btn btn-sm" id="btnSave"><i class="fa-solid fa-plus"></i> Sauvegarder</button>
+                <button class="btn btn-sm btn-ghost" id="btnExportJson"><i class="fa-solid fa-file-export"></i></button>
+                <button class="btn btn-sm btn-ghost" id="btnImportJson"><i class="fa-solid fa-file-import"></i></button>
+                <input type="file" id="importJson" accept=".json" hidden>
+            </div>
+            <div class="saved-list" id="savedList"></div>
+            <p class="hint">Sauvegardé dans ton navigateur (aucun compte, aucune donnée envoyée).</p>
+        </section>
+    </aside>
+</div>
+
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
